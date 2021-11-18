@@ -12,6 +12,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -114,14 +115,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		private Paint mTickAndCirclePaint;
 		private Paint mBackgroundPaint;
 		private Bitmap mBackgroundBitmap;
-		private Bitmap mBackgroundClockBitmap;
-		private Bitmap mBackgroundCalendarBitmap;
 		private Bitmap mGrayBackgroundBitmap;
 		private boolean mAmbient;
 		private boolean mLowBitAmbient;
 		private boolean mBurnInProtection;
-		private int faceWidth;
-		private int faceHeight;
 
 		@Override
 		public void onCreate(SurfaceHolder holder) {
@@ -140,20 +137,40 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		private void initializeBackground() {
 			mBackgroundPaint = new Paint();
 			mBackgroundPaint.setColor(Color.BLACK);
-			Bitmap mBackgroundBitmap =	BitmapFactory.decodeResource(getResources(), R.drawable.timekeeper_bg);
 
-			faceWidth = mBackgroundBitmap.getWidth();
-			faceHeight = mBackgroundBitmap.getHeight();
+			Bitmap tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.timekeeper_bg);
+			mBackgroundBitmap = Bitmap.createBitmap(
+					tmpBit.getWidth(),
+					tmpBit.getHeight(),
+					Bitmap.Config.ARGB_8888);
 
 			Canvas canvas = new Canvas(mBackgroundBitmap);
 			Paint tmpPaint = new Paint();
+
+			int topLeft = 187;
+			int size = 589;
+			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.orrery_bg);
+			canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), tmpPaint);
+
+			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.timekeeper_bg);
 			canvas.drawBitmap(tmpBit, 0, 0, tmpPaint);
+
+			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.inner_metal_frame_bg);
+			canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), tmpPaint);
+
+			topLeft = 32;
+			size = 890;
+			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.month_ring);
+			canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), tmpPaint);
 
 			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.clock_bg);
-			canvas.drawBitmap(tmpBit, 0, 0, tmpPaint);
+			int clockSize = 350;
+			int left = 100;
+			int top = 100;
+			canvas.drawBitmap(tmpBit, null, new RectF(left, top, left + clockSize, top + clockSize), tmpPaint);
 
 			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.calendar_bg);
-			canvas.drawBitmap(tmpBit, faceWidth - tmpBit.getWidth(), 118, tmpPaint);
+			canvas.drawBitmap(tmpBit, null, new RectF(mBackgroundBitmap.getWidth() - tmpBit.getWidth(), mBackgroundBitmap.getHeight() / 2 - (tmpBit.getHeight() / 2), mBackgroundBitmap.getWidth(), mBackgroundBitmap.getHeight() / 2 + tmpBit.getHeight()/2), tmpPaint);
 
 			/* Extracts colors from background image to improve watchface style. */
 			Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
@@ -326,17 +343,22 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		}
 
 		private void initGrayBackgroundBitmap() {
-			mGrayBackgroundBitmap = Bitmap.createBitmap(
-					mBackgroundBitmap.getWidth(),
-					mBackgroundBitmap.getHeight(),
+			mGrayBackgroundBitmap = convertToGray(mBackgroundBitmap);
+		}
+
+		private Bitmap convertToGray(Bitmap toConvert) {
+			Bitmap result = Bitmap.createBitmap(
+					toConvert.getWidth(),
+					toConvert.getHeight(),
 					Bitmap.Config.ARGB_8888);
-			Canvas canvas = new Canvas(mGrayBackgroundBitmap);
+			Canvas canvas = new Canvas(result);
 			Paint grayPaint = new Paint();
 			ColorMatrix colorMatrix = new ColorMatrix();
 			colorMatrix.setSaturation(0);
 			ColorMatrixColorFilter filter = new ColorMatrixColorFilter(colorMatrix);
 			grayPaint.setColorFilter(filter);
-			canvas.drawBitmap(mBackgroundBitmap, 0, 0, grayPaint);
+			canvas.drawBitmap(toConvert, 0, 0, grayPaint);
+			return result;
 		}
 
 		/**
