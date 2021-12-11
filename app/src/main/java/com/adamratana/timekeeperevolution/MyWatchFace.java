@@ -25,6 +25,8 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
+import com.adamratana.timekeeperevolution.engine.TimeKeeper;
+
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -80,7 +82,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		}
 	}
 
-	private class Engine extends CanvasWatchFaceService.Engine {
+	public class Engine extends CanvasWatchFaceService.Engine {
 		private static final float HOUR_STROKE_WIDTH = 5f;
 		private static final float MINUTE_STROKE_WIDTH = 3f;
 		private static final float SECOND_TICK_STROKE_WIDTH = 2f;
@@ -90,7 +92,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		private static final int SHADOW_RADIUS = 6;
 		/* Handler to update the time once a second in interactive mode. */
 		private final Handler mUpdateTimeHandler = new EngineHandler(this);
-		private Calendar mCalendar;
+		public Calendar mCalendar;
 		private final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -98,25 +100,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
 				invalidate();
 			}
 		};
+		private final TimeKeeper timeKeeper = new TimeKeeper(this);
 		private boolean mRegisteredTimeZoneReceiver = false;
 		private boolean mMuteMode;
-		private float mCenterX;
-		private float mCenterY;
-		private float mSecondHandLength;
-		private float sMinuteHandLength;
-		private float sHourHandLength;
 		/* Colors for all hands (hour, minute, seconds, ticks) based on photo loaded. */
-		private int mWatchHandColor;
-		private int mWatchHandHighlightColor;
-		private int mWatchHandShadowColor;
-		private Paint mHourPaint;
-		private Paint mMinutePaint;
-		private Paint mSecondPaint;
-		private Paint mTickAndCirclePaint;
-		private Paint mBackgroundPaint;
-		private Bitmap mBackgroundBitmap;
-		private Bitmap mGrayBackgroundBitmap;
-		private boolean mAmbient;
+		public boolean mAmbient;
 		private boolean mLowBitAmbient;
 		private boolean mBurnInProtection;
 
@@ -135,90 +123,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		}
 
 		private void initializeBackground() {
-			mBackgroundPaint = new Paint();
-			mBackgroundPaint.setColor(Color.BLACK);
-
-			Bitmap tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.timekeeper_bg);
-			mBackgroundBitmap = Bitmap.createBitmap(
-					tmpBit.getWidth(),
-					tmpBit.getHeight(),
-					Bitmap.Config.ARGB_8888);
-
-			Canvas canvas = new Canvas(mBackgroundBitmap);
-			Paint tmpPaint = new Paint();
-
-			int topLeft = 187;
-			int size = 589;
-			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.orrery_bg);
-			canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), tmpPaint);
-
-			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.timekeeper_bg);
-			canvas.drawBitmap(tmpBit, 0, 0, tmpPaint);
-
-			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.inner_metal_frame_bg);
-			canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), tmpPaint);
-
-			topLeft = 32;
-			size = 890;
-			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.month_ring);
-			canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), tmpPaint);
-
-			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.clock_bg);
-			int clockSize = 350;
-			int left = 100;
-			int top = 100;
-			canvas.drawBitmap(tmpBit, null, new RectF(left, top, left + clockSize, top + clockSize), tmpPaint);
-
-			tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.calendar_bg);
-			canvas.drawBitmap(tmpBit, null, new RectF(mBackgroundBitmap.getWidth() - tmpBit.getWidth(), mBackgroundBitmap.getHeight() / 2 - (tmpBit.getHeight() / 2), mBackgroundBitmap.getWidth(), mBackgroundBitmap.getHeight() / 2 + tmpBit.getHeight()/2), tmpPaint);
-
-			/* Extracts colors from background image to improve watchface style. */
-			Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
-				@Override
-				public void onGenerated(Palette palette) {
-					if (palette != null) {
-						mWatchHandHighlightColor = palette.getVibrantColor(Color.RED);
-						mWatchHandColor = palette.getLightVibrantColor(Color.WHITE);
-						mWatchHandShadowColor = palette.getDarkMutedColor(Color.BLACK);
-						updateWatchHandStyle();
-					}
-				}
-			});
+			timeKeeper.initializeBackground();
 		}
 
 		private void initializeWatchFace() {
 			/* Set defaults for colors */
-			mWatchHandColor = Color.WHITE;
-			mWatchHandHighlightColor = Color.RED;
-			mWatchHandShadowColor = Color.BLACK;
-
-			mHourPaint = new Paint();
-			mHourPaint.setColor(mWatchHandColor);
-			mHourPaint.setStrokeWidth(HOUR_STROKE_WIDTH);
-			mHourPaint.setAntiAlias(true);
-			mHourPaint.setStrokeCap(Paint.Cap.ROUND);
-			mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-
-			mMinutePaint = new Paint();
-			mMinutePaint.setColor(mWatchHandColor);
-			mMinutePaint.setStrokeWidth(MINUTE_STROKE_WIDTH);
-			mMinutePaint.setAntiAlias(true);
-			mMinutePaint.setStrokeCap(Paint.Cap.ROUND);
-			mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-
-			mSecondPaint = new Paint();
-			mSecondPaint.setColor(mWatchHandHighlightColor);
-			mSecondPaint.setStrokeWidth(SECOND_TICK_STROKE_WIDTH);
-			mSecondPaint.setAntiAlias(true);
-			mSecondPaint.setStrokeCap(Paint.Cap.ROUND);
-			mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-
-			mTickAndCirclePaint = new Paint();
-			mTickAndCirclePaint.setColor(mWatchHandColor);
-			mTickAndCirclePaint.setStrokeWidth(SECOND_TICK_STROKE_WIDTH);
-			mTickAndCirclePaint.setAntiAlias(true);
-			mTickAndCirclePaint.setStyle(Paint.Style.STROKE);
-			mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
 		}
 
 		@Override
@@ -245,45 +154,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
 			super.onAmbientModeChanged(inAmbientMode);
 			mAmbient = inAmbientMode;
 
-			updateWatchHandStyle();
+			timeKeeper.updateWatchHandStyle();
 
 			/* Check and trigger whether or not timer should be running (only in active mode). */
 			updateTimer();
-		}
-
-		private void updateWatchHandStyle() {
-			if (mAmbient) {
-				mHourPaint.setColor(Color.WHITE);
-				mMinutePaint.setColor(Color.WHITE);
-				mSecondPaint.setColor(Color.WHITE);
-				mTickAndCirclePaint.setColor(Color.WHITE);
-
-				mHourPaint.setAntiAlias(false);
-				mMinutePaint.setAntiAlias(false);
-				mSecondPaint.setAntiAlias(false);
-				mTickAndCirclePaint.setAntiAlias(false);
-
-				mHourPaint.clearShadowLayer();
-				mMinutePaint.clearShadowLayer();
-				mSecondPaint.clearShadowLayer();
-				mTickAndCirclePaint.clearShadowLayer();
-
-			} else {
-				mHourPaint.setColor(mWatchHandColor);
-				mMinutePaint.setColor(mWatchHandColor);
-				mSecondPaint.setColor(mWatchHandHighlightColor);
-				mTickAndCirclePaint.setColor(mWatchHandColor);
-
-				mHourPaint.setAntiAlias(true);
-				mMinutePaint.setAntiAlias(true);
-				mSecondPaint.setAntiAlias(true);
-				mTickAndCirclePaint.setAntiAlias(true);
-
-				mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-				mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-				mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-				mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-			}
 		}
 
 		@Override
@@ -294,9 +168,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 			/* Dim display in mute mode. */
 			if (mMuteMode != inMuteMode) {
 				mMuteMode = inMuteMode;
-				mHourPaint.setAlpha(inMuteMode ? 100 : 255);
-				mMinutePaint.setAlpha(inMuteMode ? 100 : 255);
-				mSecondPaint.setAlpha(inMuteMode ? 80 : 255);
+				timeKeeper.onMuteMode(mMuteMode);
 				invalidate();
 			}
 		}
@@ -304,28 +176,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		@Override
 		public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 			super.onSurfaceChanged(holder, format, width, height);
-
-			/*
-			 * Find the coordinates of the center point on the screen, and ignore the window
-			 * insets, so that, on round watches with a "chin", the watch face is centered on the
-			 * entire screen, not just the usable portion.
-			 */
-			mCenterX = width / 2f;
-			mCenterY = height / 2f;
-
-			/*
-			 * Calculate lengths of different hands based on watch screen size.
-			 */
-			mSecondHandLength = (float) (mCenterX * 0.875);
-			sMinuteHandLength = (float) (mCenterX * 0.75);
-			sHourHandLength = (float) (mCenterX * 0.5);
-
-			/* Scale loaded background image (more efficient) if surface dimensions change. */
-			float scale = ((float) width) / (float) mBackgroundBitmap.getWidth();
-
-			mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap,
-					(int) (mBackgroundBitmap.getWidth() * scale),
-					(int) (mBackgroundBitmap.getHeight() * scale), true);
+			timeKeeper.onSurfaceChanged(holder, format, width, height);
 
 			/*
 			 * Create a gray version of the image only if it will look nice on the device in
@@ -338,27 +189,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
 			 * efficient to create a black/white version (png, etc.) and load that when you need it.
 			 */
 			if (!mBurnInProtection && !mLowBitAmbient) {
-				initGrayBackgroundBitmap();
+				timeKeeper.initGrayBackgroundBitmap();
 			}
-		}
-
-		private void initGrayBackgroundBitmap() {
-			mGrayBackgroundBitmap = convertToGray(mBackgroundBitmap);
-		}
-
-		private Bitmap convertToGray(Bitmap toConvert) {
-			Bitmap result = Bitmap.createBitmap(
-					toConvert.getWidth(),
-					toConvert.getHeight(),
-					Bitmap.Config.ARGB_8888);
-			Canvas canvas = new Canvas(result);
-			Paint grayPaint = new Paint();
-			ColorMatrix colorMatrix = new ColorMatrix();
-			colorMatrix.setSaturation(0);
-			ColorMatrixColorFilter filter = new ColorMatrixColorFilter(colorMatrix);
-			grayPaint.setColorFilter(filter);
-			canvas.drawBitmap(toConvert, 0, 0, grayPaint);
-			return result;
 		}
 
 		/**
@@ -397,71 +229,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
 			if (mAmbient && (mLowBitAmbient || mBurnInProtection)) {
 				canvas.drawColor(Color.BLACK);
-			} else if (mAmbient) {
-				canvas.drawBitmap(mGrayBackgroundBitmap, 0, 0, mBackgroundPaint);
 			} else {
-				canvas.drawBitmap(mBackgroundBitmap, 0, 0, mBackgroundPaint);
+				timeKeeper.drawBackground(canvas, mAmbient);
 			}
 		}
 
 		private void drawWatchFace(Canvas canvas) {
-
-			/*
-			 * These calculations reflect the rotation in degrees per unit of time, e.g.,
-			 * 360 / 60 = 6 and 360 / 12 = 30.
-			 */
-			final float seconds =
-					(mCalendar.get(Calendar.SECOND) + mCalendar.get(Calendar.MILLISECOND) / 1000f);
-			final float secondsRotation = seconds * 6f;
-
-			final float minutesRotation = mCalendar.get(Calendar.MINUTE) * 6f;
-
-			final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
-			final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
-
-			/*
-			 * Save the canvas state before we can begin to rotate it.
-			 */
-			canvas.save();
-
-			canvas.rotate(hoursRotation, mCenterX, mCenterY);
-			canvas.drawLine(
-					mCenterX,
-					mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
-					mCenterX,
-					mCenterY - sHourHandLength,
-					mHourPaint);
-
-			canvas.rotate(minutesRotation - hoursRotation, mCenterX, mCenterY);
-			canvas.drawLine(
-					mCenterX,
-					mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
-					mCenterX,
-					mCenterY - sMinuteHandLength,
-					mMinutePaint);
-
-			/*
-			 * Ensure the "seconds" hand is drawn only when we are in interactive mode.
-			 * Otherwise, we only update the watch face once a minute.
-			 */
-			if (!mAmbient) {
-				canvas.rotate(secondsRotation - minutesRotation, mCenterX, mCenterY);
-				canvas.drawLine(
-						mCenterX,
-						mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
-						mCenterX,
-						mCenterY - mSecondHandLength,
-						mSecondPaint);
-
-			}
-			canvas.drawCircle(
-					mCenterX,
-					mCenterY,
-					CENTER_GAP_AND_CIRCLE_RADIUS,
-					mTickAndCirclePaint);
-
-			/* Restore the canvas" original orientation. */
-			canvas.restore();
+			timeKeeper.drawWatchFace(canvas);
 		}
 
 		@Override
