@@ -17,9 +17,4 @@ public class CalendarComponent extends TimeComponent {
 //		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.calendar_bg);
 //		canvas.drawBitmap(tmpBit, null, new RectF(mBackgroundBitmap.getWidth() - tmpBit.getWidth(), mBackgroundBitmap.getHeight() / 2 - (tmpBit.getHeight() / 2), mBackgroundBitmap.getWidth(), mBackgroundBitmap.getHeight() / 2 + tmpBit.getHeight()/2), tmpPaint);
 	}
-
-	@Override
-	public void drawBackground(Canvas canvas) {
-
-	}
 }

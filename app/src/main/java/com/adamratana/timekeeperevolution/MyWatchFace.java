@@ -4,20 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
-import androidx.palette.graphics.Palette;
 
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
@@ -118,16 +110,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
 			mCalendar = Calendar.getInstance();
 
-			initializeBackground();
-			initializeWatchFace();
-		}
-
-		private void initializeBackground() {
-			timeKeeper.initializeBackground();
-		}
-
-		private void initializeWatchFace() {
-			/* Set defaults for colors */
+			timeKeeper.onCreate();
 		}
 
 		@Override
@@ -177,20 +160,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 			super.onSurfaceChanged(holder, format, width, height);
 			timeKeeper.onSurfaceChanged(holder, format, width, height);
-
-			/*
-			 * Create a gray version of the image only if it will look nice on the device in
-			 * ambient mode. That means we don"t want devices that support burn-in
-			 * protection (slight movements in pixels, not great for images going all the way to
-			 * edges) and low ambient mode (degrades image quality).
-			 *
-			 * Also, if your watch face will know about all images ahead of time (users aren"t
-			 * selecting their own photos for the watch face), it will be more
-			 * efficient to create a black/white version (png, etc.) and load that when you need it.
-			 */
-			if (!mBurnInProtection && !mLowBitAmbient) {
-				timeKeeper.initGrayBackgroundBitmap();
-			}
 		}
 
 		/**
@@ -226,7 +195,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		}
 
 		private void drawBackground(Canvas canvas) {
-
 			if (mAmbient && (mLowBitAmbient || mBurnInProtection)) {
 				canvas.drawColor(Color.BLACK);
 			} else {
