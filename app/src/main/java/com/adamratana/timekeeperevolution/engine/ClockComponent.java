@@ -1,14 +1,18 @@
 package com.adamratana.timekeeperevolution.engine;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 
 import com.adamratana.timekeeperevolution.MyWatchFace;
 import com.adamratana.timekeeperevolution.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class ClockComponent extends TimeComponent {
 	private static final float HOUR_STROKE_WIDTH = 5f;
@@ -33,9 +37,11 @@ public class ClockComponent extends TimeComponent {
 	private Paint mMinutePaint;
 	private Paint mSecondPaint;
 	private Paint mTickAndCirclePaint;
+	private Paint mTextPaint;
 	private int mWatchHandColor;
 	private int mWatchHandHighlightColor;
 	private int mWatchHandShadowColor;
+	private int weekDay = 0;
 
 	public ClockComponent(MyWatchFace.Engine engine) {
 		super(engine);
@@ -71,6 +77,12 @@ public class ClockComponent extends TimeComponent {
 		mTickAndCirclePaint.setAntiAlias(true);
 		mTickAndCirclePaint.setStyle(Paint.Style.STROKE);
 		mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
+
+		mTextPaint = new Paint();
+		mTextPaint.setColor(Color.BLACK);
+		mTextPaint.setAntiAlias(true);
+		mTextPaint.setTextSize(30);
+		mTextPaint.setTextAlign(Paint.Align.CENTER);
 	}
 
 	public void updateWatchHandStyle() {
@@ -110,7 +122,24 @@ public class ClockComponent extends TimeComponent {
 
 	@Override
 	public void initializeBackground() {
-		mBackgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.clock_bg);
+		Bitmap tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.clock_bg);
+
+		mBackgroundBitmap = Bitmap.createBitmap(
+				tmpBit.getWidth(),
+				tmpBit.getHeight(),
+				Bitmap.Config.ARGB_8888);
+
+		Canvas canvas = new Canvas(mBackgroundBitmap);
+
+		canvas.drawBitmap(tmpBit, 0, 0, backgroundPaint);
+
+		String weekDay;
+		SimpleDateFormat dayFormat = new SimpleDateFormat("E", Locale.getDefault());
+
+		Calendar calendar = Calendar.getInstance();
+		weekDay = dayFormat.format(calendar.getTime());
+
+		canvas.drawText(weekDay.toUpperCase(), 166, 236, mTextPaint);
 
 //		/* Extracts colors from background image to improve watchface style. */
 //		Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
@@ -127,6 +156,11 @@ public class ClockComponent extends TimeComponent {
 	}
 
 	public void drawWatchFace(Canvas canvas) {
+		if (weekDay != engine.mCalendar.get(Calendar.DAY_OF_WEEK)) {
+			weekDay = engine.mCalendar.get(Calendar.DAY_OF_WEEK);
+			initializeBackground();
+		}
+
 		/*
 		 * These calculations reflect the rotation in degrees per unit of time, e.g.,
 		 * 360 / 60 = 6 and 360 / 12 = 30.
