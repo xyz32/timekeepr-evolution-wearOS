@@ -12,7 +12,8 @@ public class TimeKeeper {
 	private static int CLOCK_WIDTH = 350;
 	private static int CLOCK_HEIGHT = 350;
 	private static int CALENDAR_WIDTH = 350;
-	private static int CALENDAR_HEIGHT = 350;
+	private static double CALENDAR_ASPECT_RATE = 0.614583;
+	private static int CALENDAR_HEIGHT = (int) (CALENDAR_WIDTH * CALENDAR_ASPECT_RATE);
 
 	private final MyWatchFace.Engine engine;
 	private final OrreryComponent orrery;
@@ -38,15 +39,20 @@ public class TimeKeeper {
 
 		clock.setXY(90,90);
 		clock.setSize(CLOCK_WIDTH, CLOCK_HEIGHT);
+
+		calendar.setXY(ABSOLUTE_WIDTH - CALENDAR_WIDTH,380);
+		calendar.setSize(CALENDAR_WIDTH, CALENDAR_HEIGHT);
 	}
 
 	public void drawWatchFace(Canvas canvas) {
+		orrery.drawWatchFace(canvas);
 		clock.drawWatchFace(canvas);
 	}
 
 	public void drawBackground(Canvas canvas, boolean grayScale) {
 		orrery.drawBackground(canvas, grayScale);
 		clock.drawBackground(canvas, grayScale);
+		calendar.drawBackground(canvas, grayScale);
 	}
 
 	public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -56,6 +62,7 @@ public class TimeKeeper {
 
 		orrery.onScaleChange(scaleW, scaleH);
 		clock.onScaleChange(scaleW, scaleH);
+		calendar.onScaleChange(scaleW, scaleH);
 	}
 
 	public void onMuteMode(boolean inMuteMode) {
