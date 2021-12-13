@@ -1,12 +1,9 @@
 package com.adamratana.timekeeperevolution.engine;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-
-import androidx.palette.graphics.Palette;
 
 import com.adamratana.timekeeperevolution.MyWatchFace;
 import com.adamratana.timekeeperevolution.R;
@@ -22,11 +19,11 @@ public class ClockComponent extends TimeComponent {
 
 	private static final int SHADOW_RADIUS = 6;
 
-	private float sMinuteHandLengthX = 164;
-	private float sMinuteHandLengthY = 164;
+	private float sMinuteHandCenterX = 178;
+	private float sMinuteHandCenterY = 176;
 
-	private float mSecondHandX = 164;
-	private float mSecondHandY = 105;
+	private float mSecondHandX = 178;
+	private float mSecondHandY = 114;
 
 	private float mSecondHandLength = 32;
 	private float sMinuteHandLength = 100;
@@ -171,8 +168,8 @@ public class ClockComponent extends TimeComponent {
 		canvas.restore();
 
 		canvas.save();
-		handX = (int) (scaledX + sMinuteHandLengthX * scaleW);
-		handY = (int) (scaledY + sMinuteHandLengthY * scaleH);
+		handX = (int) (scaledX + sMinuteHandCenterX * scaleW);
+		handY = (int) (scaledY + sMinuteHandCenterY * scaleH);
 
 		canvas.rotate(hoursRotation, handX, handY);
 		canvas.drawLine(
