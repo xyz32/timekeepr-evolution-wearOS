@@ -23,4 +23,8 @@ public class ItemContents {
 	public int getText() {
 		return text;
 	}
+
+	public int getImage() {
+		return image;
+	}
 }

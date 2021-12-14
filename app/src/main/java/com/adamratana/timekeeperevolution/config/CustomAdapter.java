@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -16,8 +16,9 @@ import java.util.List;
 public class CustomAdapter extends ArrayAdapter<ItemContents> {
 	int selectedIndex = -1;
 
-	public CustomAdapter(Context context, int activity_radio_button, List<ItemContents> saveItems) {
+	public CustomAdapter(Context context, int activity_radio_button, List<ItemContents> saveItems, int selectedIndex) {
 		super(context, activity_radio_button, saveItems);
+		this.selectedIndex = selectedIndex;
 	}
 
 	public void setSelectedIndex(int index) {
@@ -26,40 +27,27 @@ public class CustomAdapter extends ArrayAdapter<ItemContents> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = convertView;
 
-		View v = convertView;
-
-		if (v == null) {
+		if (view == null) {
 			LayoutInflater layoutInflater;
 			layoutInflater = LayoutInflater.from(getContext());
-			v = layoutInflater.inflate(R.layout.radio_button_item, null);
+			view = layoutInflater.inflate(R.layout.radio_button_item, null);
 		}
 
-		RadioButton rbSelect = (RadioButton) v
+		RadioButton rbSelect = (RadioButton) view
 				.findViewById(R.id.radioButton);
 
-		rbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-				if (b) {
-					setSelectedIndex(position);
-					notifyDataSetChanged();
-				}
-			}
-		});
 		// check the position to update correct radio button.
 		rbSelect.setChecked(selectedIndex == position);
 
 		ItemContents itemContents = getItem(position);
 
 		if (itemContents != null) {
-			TextView textCode = (TextView) v.findViewById(R.id.text);
-
-
-			textCode.setText(itemContents.getText());
+			((TextView)view.findViewById(R.id.backgroundText)).setText(itemContents.getText());
+			((ImageView)view.findViewById(R.id.backgroundImage)).setImageResource(itemContents.getImage());
 		}
-
-		return v;
+		return view;
 	}
 }
 

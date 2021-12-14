@@ -11,9 +11,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,33 +23,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
-
-        <LinearLayout
-            android:id="@+id/menuBackground"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            style="?android:imageButtonStyle"
-            android:background="?android:selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            >
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:padding="2dp"
-                android:src="@drawable/ic_action_settings"
-                />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:gravity="center_vertical"
-                android:text="Change Background"
-                />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,6 +46,7 @@
             </LinearLayout>
 
             <RadioGroup
+                android:id="@+id/clockStyleRadioGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="20dp"
@@ -113,6 +85,33 @@
                 android:contentDescription=""
                 android:text="Show Calendar"
                 android:checked="true"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/menuBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="?android:imageButtonStyle"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            >
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:padding="2dp"
+                android:src="@drawable/ic_action_settings"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="Change Background"
                 />
         </LinearLayout>
     </LinearLayout>

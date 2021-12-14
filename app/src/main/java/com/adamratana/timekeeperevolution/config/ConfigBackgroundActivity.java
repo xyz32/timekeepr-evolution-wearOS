@@ -1,12 +1,11 @@
 package com.adamratana.timekeeperevolution.config;
 
-import androidx.activity.ComponentActivity;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import androidx.activity.ComponentActivity;
 
 import com.adamratana.timekeeperevolution.R;
 
@@ -20,12 +19,22 @@ public class ConfigBackgroundActivity extends ComponentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config_background);
 
+		Configs configs = Configs.instance(this);
+
 		final List<ItemContents> saveItems = new ArrayList<>();
 		saveItems.add(itemContents(0, R.string.background_supernova, R.drawable.orrery_bg_supernova));
 		saveItems.add(itemContents(1, R.string.background_dark_sky, R.drawable.orrery_bg_backsky));
 		saveItems.add(itemContents(2, R.string.background_scifi, R.drawable.orrery_bg_scifi));
+		int selected = 0;
+		int currentBg = configs.getInt(Configs.ConfigKey.background);
+		for (ItemContents item: saveItems) {
+			if (item.getImage() == currentBg){
+				break;
+			}
+			selected ++;
+		}
 
-		final CustomAdapter adapter = new CustomAdapter(this, R.layout.radio_button_item, saveItems);
+		final CustomAdapter adapter = new CustomAdapter(this, R.layout.radio_button_item, saveItems, selected);
 		ListView listView = (ListView) findViewById(R.id.radioGroup);
 		listView.setAdapter(adapter);
 		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -34,6 +43,8 @@ public class ConfigBackgroundActivity extends ComponentActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				adapter.setSelectedIndex(position);  // set selected position and notify the adapter
 				adapter.notifyDataSetChanged();
+
+				configs.setInt(Configs.ConfigKey.background, saveItems.get(position).getImage());
 			}
 		});
 	}
