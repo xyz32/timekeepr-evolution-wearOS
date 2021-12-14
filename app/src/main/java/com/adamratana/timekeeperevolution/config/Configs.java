@@ -82,7 +82,7 @@ public class Configs {
 		showClock("showClock", true),
 		clockStyle("clockStyle", 0),
 		showCalendar("showCalendar", true),
-		background("background", R.drawable.orrery_bg_supernova);
+		background("background", R.drawable.orrery_bg_backsky);
 
 		public String storeKeyID;
 		public Object defaultVal;

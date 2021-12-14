@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable-anydpi/ic_action_settings.xml" value="1.43125" />
         <entry key="app/src/main/res/layout/activity_config.xml" value="0.5545722713864307" />
-        <entry key="app/src/main/res/layout/activity_config_background.xml" value="1.188953488372093" />
+        <entry key="app/src/main/res/layout/activity_config_background.xml" value="0.875" />
         <entry key="app/src/main/res/layout/config_ext.xml" value="1.0444444444444445" />
         <entry key="app/src/main/res/layout/radio_button_item.xml" value="1.188953488372093" />
       </map>
