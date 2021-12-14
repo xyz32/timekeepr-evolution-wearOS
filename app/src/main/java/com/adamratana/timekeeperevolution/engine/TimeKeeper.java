@@ -1,6 +1,5 @@
 package com.adamratana.timekeeperevolution.engine;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
@@ -16,17 +15,19 @@ public class TimeKeeper {
 	private static int CALENDAR_HEIGHT = (int) (CALENDAR_WIDTH * CALENDAR_ASPECT_RATE);
 
 	private final MyWatchFace.Engine engine;
-	private final OrreryComponent orrery;
-	private final ClockComponent clock;
-	private final CalendarComponent calendar;
+	private OrreryComponent orrery;
+	private ClockComponent clock;
+	private CalendarComponent calendar;
 	private boolean mMuteMode = false;
 
 	public TimeKeeper(MyWatchFace.Engine engine) {
 		this.engine = engine;
+	}
 
-		orrery = new OrreryComponent(engine);
-		clock = new ClockComponent(engine);
-		calendar = new CalendarComponent(engine);
+	public void invalidate() {
+		orrery.initializeBackground();
+		clock.initializeBackground();
+		calendar.initializeBackground();
 	}
 
 	public void updateWatchHandStyle() {
@@ -34,12 +35,15 @@ public class TimeKeeper {
 	}
 
 	public void onCreate() {
+		orrery = new OrreryComponent(engine);
 		orrery.setXY(0,0);
 		orrery.setSize(ABSOLUTE_WIDTH, ABSOLUTE_HEIGHT);
 
+		clock = new ClockComponent(engine);
 		clock.setXY(90,90);
 		clock.setSize(CLOCK_WIDTH, CLOCK_HEIGHT);
 
+		calendar = new CalendarComponent(engine);
 		calendar.setXY(ABSOLUTE_WIDTH - CALENDAR_WIDTH,380);
 		calendar.setSize(CALENDAR_WIDTH, CALENDAR_HEIGHT);
 	}

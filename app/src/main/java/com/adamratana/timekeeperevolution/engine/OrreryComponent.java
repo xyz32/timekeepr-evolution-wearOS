@@ -7,6 +7,7 @@ import android.graphics.RectF;
 
 import com.adamratana.timekeeperevolution.MyWatchFace;
 import com.adamratana.timekeeperevolution.R;
+import com.adamratana.timekeeperevolution.config.Configs;
 import com.adamratana.timekeeperevolution.engine.utils.Planets;
 
 import java.util.Calendar;
@@ -31,7 +32,7 @@ public class OrreryComponent extends TimeComponent{
 
 		int topLeft = 187;
 		int size = 589;
-		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.orrery_bg_supernova);
+		tmpBit = BitmapFactory.decodeResource(getResources(), engine.configs.getInt(Configs.ConfigKey.background));
 		canvas.drawBitmap(tmpBit, null, new RectF(topLeft, topLeft, topLeft + size, topLeft + size), backgroundPaint);
 
 		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.timekeeper_bg);

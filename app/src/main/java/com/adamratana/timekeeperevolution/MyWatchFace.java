@@ -10,13 +10,13 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
+import com.adamratana.timekeeperevolution.config.Configs;
 import com.adamratana.timekeeperevolution.engine.TimeKeeper;
 
 import java.lang.ref.WeakReference;
@@ -78,6 +78,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		/* Handler to update the time once a second in interactive mode. */
 		private final Handler mUpdateTimeHandler = new EngineHandler(this);
 		public Calendar mCalendar;
+		public Configs configs;
 		private final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -100,6 +101,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
 			setWatchFaceStyle(new WatchFaceStyle.Builder(MyWatchFace.this)
 					.setAcceptsTapEvents(true)
 					.build());
+
+			configs = Configs.instance(getDisplayContext());
 
 			mCalendar = Calendar.getInstance();
 
@@ -205,8 +208,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
 			if (visible) {
 				registerReceiver();
-				/* Update time zone in case it changed while we weren"t visible. */
+				/* Update time zone in case it changed while we weren't visible. */
 				mCalendar.setTimeZone(TimeZone.getDefault());
+				timeKeeper.invalidate();
 				invalidate();
 			} else {
 				unregisterReceiver();
