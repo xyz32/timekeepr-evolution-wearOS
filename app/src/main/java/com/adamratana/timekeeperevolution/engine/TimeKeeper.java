@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 import com.adamratana.timekeeperevolution.MyWatchFace;
+import com.adamratana.timekeeperevolution.config.Configs;
 
 public class TimeKeeper {
 	private static int ABSOLUTE_WIDTH = 956;
@@ -26,12 +27,18 @@ public class TimeKeeper {
 
 	public void invalidate() {
 		orrery.initializeBackground();
-		clock.initializeBackground();
-		calendar.initializeBackground();
+		if (engine.configs.getBoolean(Configs.ConfigKey.showClock)) {
+			clock.initializeBackground();
+		}
+		if (engine.configs.getBoolean(Configs.ConfigKey.showCalendar)) {
+			calendar.initializeBackground();
+		}
 	}
 
 	public void updateWatchHandStyle() {
-		clock.updateWatchHandStyle();
+		if (engine.configs.getBoolean(Configs.ConfigKey.showClock)) {
+			clock.updateWatchHandStyle();
+		}
 	}
 
 	public void onCreate() {
@@ -40,8 +47,13 @@ public class TimeKeeper {
 		orrery.setSize(ABSOLUTE_WIDTH, ABSOLUTE_HEIGHT);
 
 		clock = new ClockComponent(engine);
-		clock.setXY(90,90);
-		clock.setSize(CLOCK_WIDTH, CLOCK_HEIGHT);
+		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) == 0) {
+			clock.setXY(90, 90);
+			clock.setSize(CLOCK_WIDTH, CLOCK_HEIGHT);
+		} else {
+			clock.setXY(0, 0);
+			clock.setSize(ABSOLUTE_WIDTH, ABSOLUTE_HEIGHT);
+		}
 
 		calendar = new CalendarComponent(engine);
 		calendar.setXY(ABSOLUTE_WIDTH - CALENDAR_WIDTH,380);
@@ -50,13 +62,20 @@ public class TimeKeeper {
 
 	public void drawWatchFace(Canvas canvas) {
 		orrery.drawWatchFace(canvas);
-		clock.drawWatchFace(canvas);
+		if (engine.configs.getBoolean(Configs.ConfigKey.showClock)) {
+			clock.drawWatchFace(canvas);
+		}
 	}
 
 	public void drawBackground(Canvas canvas, boolean grayScale) {
 		orrery.drawBackground(canvas, grayScale);
-		clock.drawBackground(canvas, grayScale);
-		calendar.drawBackground(canvas, grayScale);
+		if (engine.configs.getBoolean(Configs.ConfigKey.showClock)
+			&& (engine.configs.getInt(Configs.ConfigKey.clockStyle) == 0)) {
+			clock.drawBackground(canvas, grayScale);
+		}
+		if (engine.configs.getBoolean(Configs.ConfigKey.showCalendar)) {
+			calendar.drawBackground(canvas, grayScale);
+		}
 	}
 
 	public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
