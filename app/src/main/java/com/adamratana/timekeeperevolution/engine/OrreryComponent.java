@@ -3,6 +3,7 @@ package com.adamratana.timekeeperevolution.engine;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.RectF;
 
 import com.adamratana.timekeeperevolution.MyWatchFace;
@@ -15,10 +16,14 @@ import java.util.Calendar;
 public class OrreryComponent extends TimeComponent{
 
 	private final float[] monthRingAngles = new float[] {0, -31, -62, -93, -123, -153, -182.5f, -212, -241.5f, -270.5f, -299.5f, -329.2f};
+	private final WatchFace watchFace;
 	private float monthAngle = 0;
 
 	public OrreryComponent(MyWatchFace.Engine engine) {
 		super(engine);
+
+		watchFace = new WatchFace(engine);
+		watchFace.setColour(Color.WHITE);
 	}
 
 	public void initializeBackground() {
@@ -74,6 +79,8 @@ public class OrreryComponent extends TimeComponent{
 		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.month_ring);
 		canvas.drawBitmap(tmpBit, null, new RectF(left, top, left + size, top + size), backgroundPaint);
 		canvas.restore();
+
+		watchFace.calculatePalette(mBackgroundBitmap);
 	}
 
 	public void drawWatchFace(Canvas canvas) {
@@ -84,6 +91,10 @@ public class OrreryComponent extends TimeComponent{
 		if (monthAngle != newMonthAngle) {
 			monthAngle = newMonthAngle;
 			initializeBackground();
+		}
+
+		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) == 1) {
+			watchFace.drawWatchFace(canvas);
 		}
 	}
 

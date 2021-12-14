@@ -1,51 +1,35 @@
 package com.adamratana.timekeeperevolution.engine;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import androidx.palette.graphics.Palette;
+
 import com.adamratana.timekeeperevolution.MyWatchFace;
-import com.adamratana.timekeeperevolution.R;
-import com.adamratana.timekeeperevolution.config.Configs;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
-public class ClockComponent extends TimeComponent {
+public class WatchFace {
 	private static final float HOUR_STROKE_WIDTH = 5f;
 	private static final float MINUTE_STROKE_WIDTH = 3f;
 	private static final float SECOND_TICK_STROKE_WIDTH = 2f;
-
 	private static final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
-
 	private static final int SHADOW_RADIUS = 6;
 
-	private float sMinuteHandCenterX = 178;
-	private float sMinuteHandCenterY = 176;
-
-	private float mSecondHandX = 178;
-	private float mSecondHandY = 114;
-
-	private float mSecondHandLength = 32;
-	private float sMinuteHandLength = 100;
-	private float sHourHandLength = 70;
+	MyWatchFace.Engine engine;
 
 	private Paint mHourPaint;
 	private Paint mMinutePaint;
 	private Paint mSecondPaint;
 	private Paint mTickAndCirclePaint;
-	private Paint mTextPaint;
 	private int mWatchHandColor;
 	private int mWatchHandHighlightColor;
 	private int mWatchHandShadowColor;
-	private int weekDay = 0;
 
-	public ClockComponent(MyWatchFace.Engine engine) {
-		super(engine);
-
+	public WatchFace(MyWatchFace.Engine engine) {
+		this.engine = engine;
 		mWatchHandColor = Color.BLACK;
 		mWatchHandHighlightColor = Color.BLACK;
 		mWatchHandShadowColor = Color.BLACK;
@@ -77,12 +61,6 @@ public class ClockComponent extends TimeComponent {
 		mTickAndCirclePaint.setAntiAlias(true);
 		mTickAndCirclePaint.setStyle(Paint.Style.STROKE);
 		mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-
-		mTextPaint = new Paint();
-		mTextPaint.setColor(Color.BLACK);
-		mTextPaint.setAntiAlias(true);
-		mTextPaint.setTextSize(30);
-		mTextPaint.setTextAlign(Paint.Align.CENTER);
 	}
 
 	public void updateWatchHandStyle() {
@@ -120,51 +98,7 @@ public class ClockComponent extends TimeComponent {
 		}
 	}
 
-	@Override
-	public void initializeBackground() {
-		Bitmap tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.clock_bg);
-
-		mBackgroundBitmap = Bitmap.createBitmap(
-				tmpBit.getWidth(),
-				tmpBit.getHeight(),
-				Bitmap.Config.ARGB_8888);
-
-		Canvas canvas = new Canvas(mBackgroundBitmap);
-
-		canvas.drawBitmap(tmpBit, 0, 0, backgroundPaint);
-
-		String weekDay;
-		SimpleDateFormat dayFormat = new SimpleDateFormat("E", Locale.getDefault());
-
-		Calendar calendar = Calendar.getInstance();
-		weekDay = dayFormat.format(calendar.getTime());
-
-		canvas.drawText(weekDay.toUpperCase(), 166, 236, mTextPaint);
-
-		/* Extracts colors from background image to improve watchface style. */
-//		Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
-//			@Override
-//			public void onGenerated(Palette palette) {
-//				if (palette != null) {
-//					mWatchHandHighlightColor = palette.getVibrantColor(Color.RED);
-//					mWatchHandColor = palette.getLightVibrantColor(Color.WHITE);
-//					mWatchHandShadowColor = palette.getDarkMutedColor(Color.BLACK);
-//					updateWatchHandStyle();
-//				}
-//			}
-//		});
-	}
-
 	public void drawWatchFace(Canvas canvas) {
-		if (weekDay != engine.mCalendar.get(Calendar.DAY_OF_WEEK)) {
-			weekDay = engine.mCalendar.get(Calendar.DAY_OF_WEEK);
-			initializeBackground();
-		}
-
-		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) != 0) {
-			return;
-		}
-
 		/*
 		 * These calculations reflect the rotation in degrees per unit of time, e.g.,
 		 * 360 / 60 = 6 and 360 / 12 = 30.
@@ -178,6 +112,13 @@ public class ClockComponent extends TimeComponent {
 		final float hourHandOffset = engine.mCalendar.get(Calendar.MINUTE) / 2f;
 		final float hoursRotation = (engine.mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
 
+		int handX = canvas.getWidth() / 2;
+		int handY = canvas.getHeight() / 2;
+
+		float mSecondHandLength = (float) (handX * 0.75);
+		float sMinuteHandLength = (float) (handX * 0.65);
+		float sHourHandLength = (float) (handX * 0.45);
+
 		/*
 		 * Save the canvas state before we can begin to rotate it.
 		 */
@@ -188,16 +129,13 @@ public class ClockComponent extends TimeComponent {
 		 * Otherwise, we only update the watch face once a minute.
 		 */
 
-		int handX = (int) (scaledX + mSecondHandX * scaleW);
-		int handY = (int) (scaledY + mSecondHandY * scaleH);
-
 		if (!engine.mAmbient) {
 			canvas.rotate(secondsRotation, handX, handY);
 			canvas.drawLine(
 					handX,
 					handY,
 					handX,
-					handY - mSecondHandLength * scaleH,
+					handY - mSecondHandLength,
 					mSecondPaint);
 
 		}
@@ -206,15 +144,12 @@ public class ClockComponent extends TimeComponent {
 		canvas.restore();
 
 		canvas.save();
-		handX = (int) (scaledX + sMinuteHandCenterX * scaleW);
-		handY = (int) (scaledY + sMinuteHandCenterY * scaleH);
-
 		canvas.rotate(hoursRotation, handX, handY);
 		canvas.drawLine(
 				handX,
 				handY - CENTER_GAP_AND_CIRCLE_RADIUS,
 				handX,
-				handY - sHourHandLength * scaleH,
+				handY - sHourHandLength,
 				mHourPaint);
 
 		canvas.rotate(minutesRotation - hoursRotation, handX, handY);
@@ -222,7 +157,7 @@ public class ClockComponent extends TimeComponent {
 				handX,
 				handY - CENTER_GAP_AND_CIRCLE_RADIUS,
 				handX,
-				handY - sMinuteHandLength * scaleH,
+				handY - sMinuteHandLength,
 				mMinutePaint);
 
 		canvas.drawCircle(
@@ -237,5 +172,27 @@ public class ClockComponent extends TimeComponent {
 		mHourPaint.setAlpha(alpha);
 		mMinutePaint.setAlpha(alpha);
 		mSecondPaint.setAlpha(alpha);
+	}
+
+	public void setColour(int colour) {
+		mWatchHandColor = colour;
+		mWatchHandHighlightColor = colour;
+		mWatchHandShadowColor = colour;
+
+		updateWatchHandStyle();
+	}
+
+	public void calculatePalette(Bitmap mBackgroundBitmap) {
+		Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
+			@Override
+			public void onGenerated(Palette palette) {
+				if (palette != null) {
+					mWatchHandHighlightColor = palette.getVibrantColor(Color.RED);
+					mWatchHandColor = palette.getLightVibrantColor(Color.WHITE);
+					mWatchHandShadowColor = palette.getDarkMutedColor(Color.BLACK);
+					updateWatchHandStyle();
+				}
+			}
+		});
 	}
 }

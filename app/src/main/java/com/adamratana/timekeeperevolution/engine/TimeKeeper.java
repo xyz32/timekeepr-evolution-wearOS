@@ -47,13 +47,8 @@ public class TimeKeeper {
 		orrery.setSize(ABSOLUTE_WIDTH, ABSOLUTE_HEIGHT);
 
 		clock = new ClockComponent(engine);
-		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) == 0) {
-			clock.setXY(90, 90);
-			clock.setSize(CLOCK_WIDTH, CLOCK_HEIGHT);
-		} else {
-			clock.setXY(0, 0);
-			clock.setSize(ABSOLUTE_WIDTH, ABSOLUTE_HEIGHT);
-		}
+		clock.setXY(90, 90);
+		clock.setSize(CLOCK_WIDTH, CLOCK_HEIGHT);
 
 		calendar = new CalendarComponent(engine);
 		calendar.setXY(ABSOLUTE_WIDTH - CALENDAR_WIDTH,380);
