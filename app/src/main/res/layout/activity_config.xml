@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription=""
-                    android:text="Show Clock"
+                    android:text="@string/show_clock"
                     android:checked="true"
                     />
             </LinearLayout>
@@ -61,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="Small"
+                    android:text="@string/small"
                     android:checked="true"
                     />
 
@@ -70,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="Large"
+                    android:text="@string/large"
                     android:checked="false"
                     />
             </RadioGroup>
@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription=""
-                android:text="Show Calendar"
+                android:text="@string/show_calendar"
                 android:checked="true"
                 />
         </LinearLayout>
@@ -113,9 +113,10 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:text="Change Background"
+                android:textColor="@android:color/white"
+                android:text="@string/change_background"
                 />
         </LinearLayout>
     </LinearLayout>

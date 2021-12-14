@@ -8,4 +8,9 @@
     <string name="background_supernova">Supernova</string>
     <string name="background_dark_sky">Dark Sky</string>
     <string name="background_scifi">Sci-fi</string>
+    <string name="change_background">Change Background</string>
+    <string name="show_calendar">Show Calendar</string>
+    <string name="large">Large</string>
+    <string name="small">Small</string>
+    <string name="show_clock">Show Clock</string>
 </resources>
