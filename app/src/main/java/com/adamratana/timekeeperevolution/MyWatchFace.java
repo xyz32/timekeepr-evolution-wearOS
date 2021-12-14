@@ -75,13 +75,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
 	}
 
 	public class Engine extends CanvasWatchFaceService.Engine {
-		private static final float HOUR_STROKE_WIDTH = 5f;
-		private static final float MINUTE_STROKE_WIDTH = 3f;
-		private static final float SECOND_TICK_STROKE_WIDTH = 2f;
-
-		private static final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
-
-		private static final int SHADOW_RADIUS = 6;
 		/* Handler to update the time once a second in interactive mode. */
 		private final Handler mUpdateTimeHandler = new EngineHandler(this);
 		public Calendar mCalendar;

@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import androidx.palette.graphics.Palette;
+
 import com.adamratana.timekeeperevolution.MyWatchFace;
 import com.adamratana.timekeeperevolution.R;
 
@@ -47,7 +49,7 @@ public class ClockComponent extends TimeComponent {
 		super(engine);
 
 		mWatchHandColor = Color.BLACK;
-		mWatchHandHighlightColor = Color.RED;
+		mWatchHandHighlightColor = Color.BLACK;
 		mWatchHandShadowColor = Color.BLACK;
 
 		mHourPaint = new Paint();
@@ -141,7 +143,7 @@ public class ClockComponent extends TimeComponent {
 
 		canvas.drawText(weekDay.toUpperCase(), 166, 236, mTextPaint);
 
-//		/* Extracts colors from background image to improve watchface style. */
+		/* Extracts colors from background image to improve watchface style. */
 //		Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
 //			@Override
 //			public void onGenerated(Palette palette) {

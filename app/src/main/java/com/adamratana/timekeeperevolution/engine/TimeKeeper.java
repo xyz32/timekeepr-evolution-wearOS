@@ -11,7 +11,7 @@ public class TimeKeeper {
 	private static int ABSOLUTE_HEIGHT = 956;
 	private static int CLOCK_WIDTH = 350;
 	private static int CLOCK_HEIGHT = 350;
-	private static int CALENDAR_WIDTH = 350;
+	private static int CALENDAR_WIDTH = 370;
 	private static double CALENDAR_ASPECT_RATE = 0.614583;
 	private static int CALENDAR_HEIGHT = (int) (CALENDAR_WIDTH * CALENDAR_ASPECT_RATE);
 
