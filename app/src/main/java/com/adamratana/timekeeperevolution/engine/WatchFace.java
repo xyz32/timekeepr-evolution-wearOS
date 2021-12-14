@@ -31,7 +31,7 @@ public class WatchFace {
 	public WatchFace(MyWatchFace.Engine engine) {
 		this.engine = engine;
 		mWatchHandColor = Color.BLACK;
-		mWatchHandHighlightColor = Color.BLACK;
+		mWatchHandHighlightColor = Color.RED;
 		mWatchHandShadowColor = Color.BLACK;
 
 		mHourPaint = new Paint();
@@ -176,8 +176,6 @@ public class WatchFace {
 
 	public void setColour(int colour) {
 		mWatchHandColor = colour;
-		mWatchHandHighlightColor = colour;
-		mWatchHandShadowColor = colour;
 
 		updateWatchHandStyle();
 	}

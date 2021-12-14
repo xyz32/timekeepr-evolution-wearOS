@@ -79,8 +79,6 @@ public class OrreryComponent extends TimeComponent{
 		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.month_ring);
 		canvas.drawBitmap(tmpBit, null, new RectF(left, top, left + size, top + size), backgroundPaint);
 		canvas.restore();
-
-		watchFace.calculatePalette(mBackgroundBitmap);
 	}
 
 	public void drawWatchFace(Canvas canvas) {

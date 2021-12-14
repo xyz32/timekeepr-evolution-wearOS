@@ -47,8 +47,8 @@ public class ClockComponent extends TimeComponent {
 		super(engine);
 
 		mWatchHandColor = Color.BLACK;
-		mWatchHandHighlightColor = Color.BLACK;
-		mWatchHandShadowColor = Color.BLACK;
+		mWatchHandHighlightColor = Color.RED;
+		mWatchHandShadowColor = Color.GRAY;
 
 		mHourPaint = new Paint();
 		mHourPaint.setColor(mWatchHandColor);
