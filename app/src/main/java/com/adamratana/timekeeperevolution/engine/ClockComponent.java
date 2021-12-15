@@ -21,7 +21,7 @@ public class ClockComponent extends TimeComponent {
 
 	private static final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
 
-	private static final int SHADOW_RADIUS = 6;
+	private static final int SHADOW_RADIUS = 8;
 
 	private float sMinuteHandCenterX = 178;
 	private float sMinuteHandCenterY = 176;
@@ -46,9 +46,9 @@ public class ClockComponent extends TimeComponent {
 	public ClockComponent(MyWatchFace.Engine engine) {
 		super(engine);
 
-		mWatchHandColor = Color.BLACK;
+		mWatchHandColor = Color.WHITE;
 		mWatchHandHighlightColor = Color.RED;
-		mWatchHandShadowColor = Color.GRAY;
+		mWatchHandShadowColor = Color.BLACK;
 
 		mHourPaint = new Paint();
 		mHourPaint.setColor(mWatchHandColor);
