@@ -2,6 +2,6 @@
 <resources>
     <dimen name="list_start_padding">32dp</dimen>
     <dimen name="list_end_padding">32dp</dimen>
-    <dimen name="list_top_padding">10dp</dimen>
-    <dimen name="list_bottom_padding">10dp</dimen>
+    <dimen name="list_top_padding">12dp</dimen>
+    <dimen name="list_bottom_padding">12dp</dimen>
 </resources>

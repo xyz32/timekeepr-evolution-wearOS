@@ -43,7 +43,7 @@
                     android:id="@+id/showClock"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:contentDescription=""
+                    android:contentDescription="@string/show_clock"
                     android:text="@string/show_clock"
                     android:checked="true"
                     />
@@ -86,7 +86,7 @@
                 android:id="@+id/showCalendar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription=""
+                android:contentDescription="@string/show_calendar"
                 android:text="@string/show_calendar"
                 android:checked="true"
                 />
@@ -104,17 +104,18 @@
             >
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
                 android:padding="2dp"
+                android:layout_marginHorizontal="4dp"
                 android:src="@drawable/ic_action_settings"
                 />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:layout_gravity="center"
                 android:textColor="@android:color/white"
                 android:text="@string/change_background"
                 />
