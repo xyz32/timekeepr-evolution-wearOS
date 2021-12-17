@@ -93,6 +93,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 		public boolean mAmbient;
 		private boolean mLowBitAmbient;
 		private boolean mBurnInProtection;
+		public Context context;
 
 		@Override
 		public void onCreate(SurfaceHolder holder) {
@@ -102,7 +103,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
 					.setAcceptsTapEvents(true)
 					.build());
 
-			configs = Configs.instance(getDisplayContext());
+			this.context = getApplicationContext();
+
+			configs = Configs.instance(context);
 
 			mCalendar = Calendar.getInstance();
 

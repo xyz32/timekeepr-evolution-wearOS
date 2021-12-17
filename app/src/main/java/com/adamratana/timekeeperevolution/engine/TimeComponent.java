@@ -50,7 +50,7 @@ public abstract class TimeComponent {
 	}
 
 	protected Resources getResources() {
-		return engine.getDisplayContext().getResources();
+		return engine.context.getResources();
 	}
 
 	public void setXY(int x, int y) {
