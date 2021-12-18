@@ -91,7 +91,7 @@ public class OrreryComponent extends TimeComponent{
 			initializeBackground();
 		}
 
-		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) == 1) {
+		if (engine.configs.getBoolean(Configs.ConfigKey.showClock) && engine.configs.getInt(Configs.ConfigKey.clockStyle) == TimeKeeper.CLOCK_STATUS_LARGE) {
 			watchFace.drawWatchFace(canvas);
 		}
 	}

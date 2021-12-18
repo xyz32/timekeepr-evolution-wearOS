@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adamratana.timekeeperevolution.R;
+import com.adamratana.timekeeperevolution.engine.TimeKeeper;
 
 public class Configs {
 	// support variables
@@ -80,8 +81,8 @@ public class Configs {
 
 	public enum ConfigKey {
 		showClock("showClock", true),
-		clockStyle("clockStyle", 0),
-		showCalendar("showCalendar", true),
+		clockStyle("clockStyle", TimeKeeper.CLOCK_STATUS_LARGE),
+		showCalendar("showCalendar", false),
 		background("background", R.drawable.orrery_bg_backsky);
 
 		public String storeKeyID;

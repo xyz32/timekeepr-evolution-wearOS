@@ -161,7 +161,7 @@ public class ClockComponent extends TimeComponent {
 			initializeBackground();
 		}
 
-		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) != 0) {
+		if (engine.configs.getInt(Configs.ConfigKey.clockStyle) != TimeKeeper.CLOCK_STATUS_SMALL) {
 			return;
 		}
 

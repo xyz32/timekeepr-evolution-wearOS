@@ -7,6 +7,8 @@ import com.adamratana.timekeeperevolution.MyWatchFace;
 import com.adamratana.timekeeperevolution.config.Configs;
 
 public class TimeKeeper {
+	public static int CLOCK_STATUS_SMALL = 0;
+	public static int CLOCK_STATUS_LARGE = 1;
 	private static int ABSOLUTE_WIDTH = 956;
 	private static int ABSOLUTE_HEIGHT = 956;
 	private static int CLOCK_WIDTH = 350;
@@ -65,7 +67,7 @@ public class TimeKeeper {
 	public void drawBackground(Canvas canvas, boolean grayScale) {
 		orrery.drawBackground(canvas, grayScale);
 		if (engine.configs.getBoolean(Configs.ConfigKey.showClock)
-			&& (engine.configs.getInt(Configs.ConfigKey.clockStyle) == 0)) {
+			&& (engine.configs.getInt(Configs.ConfigKey.clockStyle) == CLOCK_STATUS_SMALL)) {
 			clock.drawBackground(canvas, grayScale);
 		}
 		if (engine.configs.getBoolean(Configs.ConfigKey.showCalendar)) {
