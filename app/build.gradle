@@ -9,9 +9,8 @@ android {
         applicationId "com.adamratana.timekeeperevolution"
         minSdk 23
         targetSdk 31
-        versionCode 3
-        versionName "1.2"
-
+        versionCode 4
+        versionName "1.3"
     }
 
     buildTypes {
@@ -29,7 +28,6 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.support:wearable:2.8.1'
-    implementation 'com.google.android.gms:play-services-base:18.0.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
