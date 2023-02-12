@@ -49,7 +49,7 @@ public class OrreryComponent extends TimeComponent{
 		canvas.save();
 		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.boddy_sun_top);
 		float scaleFactor = 0.2f;
-		canvas.translate(mBackgroundBitmap.getWidth() / 2 - tmpBit.getWidth()*scaleFactor / 2, mBackgroundBitmap.getHeight() / 2 - tmpBit.getHeight()*scaleFactor / 2);
+		canvas.translate(mBackgroundBitmap.getWidth() / 2f - tmpBit.getWidth()*scaleFactor / 2f, mBackgroundBitmap.getHeight() / 2f - tmpBit.getHeight()*scaleFactor / 2f);
 		canvas.scale(scaleFactor, scaleFactor);
 		canvas.drawBitmap(tmpBit, 0, 0, backgroundPaint);
 		canvas.restore();
@@ -66,6 +66,7 @@ public class OrreryComponent extends TimeComponent{
 		drawPlanet(canvas, R.drawable.body_uranus_top, 0.19f, (float) -Planets.getTrueAnomaly(6, engine.mCalendar), 267, centerX, centerY);
 		drawPlanet(canvas, R.drawable.body_neptune_top, 0.19f, (float) -Planets.getTrueAnomaly(7, engine.mCalendar), 295, centerX, centerY);
 
+		//draw month ring
 		int top = 40;
 		int left = 34;
 		size = 890;
@@ -78,6 +79,18 @@ public class OrreryComponent extends TimeComponent{
 		canvas.rotate(monthAngle, (float) (left + size/2), (float) (top + size/2));
 		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.month_ring);
 		canvas.drawBitmap(tmpBit, null, new RectF(left, top, left + size, top + size), backgroundPaint);
+		canvas.restore();
+
+		//draw looking glass
+		int sizeX = 140;
+		int sizeY = 190;
+		int sizeDiff =  (sizeY - sizeX) - 10;
+
+		left = mBackgroundBitmap.getWidth() - sizeX;
+		top = mBackgroundBitmap.getHeight() / 2 - (sizeY / 2) + sizeDiff;
+		canvas.save();
+		tmpBit = BitmapFactory.decodeResource(getResources(), R.drawable.looking_glass);
+		canvas.drawBitmap(tmpBit, null, new RectF(left, top, left + sizeX, top + sizeY), backgroundPaint);
 		canvas.restore();
 	}
 

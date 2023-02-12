@@ -9,8 +9,8 @@ import com.adamratana.timekeeperevolution.config.Configs;
 public class TimeKeeper {
 	public static int CLOCK_STATUS_SMALL = 0;
 	public static int CLOCK_STATUS_LARGE = 1;
-	private static int ABSOLUTE_WIDTH = 956;
-	private static int ABSOLUTE_HEIGHT = 956;
+	private static final int ABSOLUTE_WIDTH = 956;
+	private static final int ABSOLUTE_HEIGHT = 956;
 	private static int CLOCK_WIDTH = 350;
 	private static int CLOCK_HEIGHT = 350;
 	private static int CALENDAR_WIDTH = 370;

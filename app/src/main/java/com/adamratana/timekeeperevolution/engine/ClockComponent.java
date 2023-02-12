@@ -23,24 +23,14 @@ public class ClockComponent extends TimeComponent {
 
 	private static final int SHADOW_RADIUS = 8;
 
-	private float sMinuteHandCenterX = 178;
-	private float sMinuteHandCenterY = 176;
-
-	private float mSecondHandX = 178;
-	private float mSecondHandY = 114;
-
-	private float mSecondHandLength = 32;
-	private float sMinuteHandLength = 100;
-	private float sHourHandLength = 70;
-
-	private Paint mHourPaint;
-	private Paint mMinutePaint;
-	private Paint mSecondPaint;
-	private Paint mTickAndCirclePaint;
-	private Paint mTextPaint;
-	private int mWatchHandColor;
-	private int mWatchHandHighlightColor;
-	private int mWatchHandShadowColor;
+	private final Paint mHourPaint;
+	private final Paint mMinutePaint;
+	private final Paint mSecondPaint;
+	private final Paint mTickAndCirclePaint;
+	private final Paint mTextPaint;
+	private final int mWatchHandColor;
+	private final int mWatchHandHighlightColor;
+	private final int mWatchHandShadowColor;
 	private int weekDay = 0;
 
 	public ClockComponent(MyWatchFace.Engine engine) {
@@ -188,11 +178,14 @@ public class ClockComponent extends TimeComponent {
 		 * Otherwise, we only update the watch face once a minute.
 		 */
 
+		float mSecondHandX = 178;
 		int handX = (int) (scaledX + mSecondHandX * scaleW);
+		float mSecondHandY = 114;
 		int handY = (int) (scaledY + mSecondHandY * scaleH);
 
 		if (!engine.mAmbient) {
 			canvas.rotate(secondsRotation, handX, handY);
+			float mSecondHandLength = 32;
 			canvas.drawLine(
 					handX,
 					handY,
@@ -206,10 +199,13 @@ public class ClockComponent extends TimeComponent {
 		canvas.restore();
 
 		canvas.save();
+		float sMinuteHandCenterX = 178;
 		handX = (int) (scaledX + sMinuteHandCenterX * scaleW);
+		float sMinuteHandCenterY = 176;
 		handY = (int) (scaledY + sMinuteHandCenterY * scaleH);
 
 		canvas.rotate(hoursRotation, handX, handY);
+		float sHourHandLength = 70;
 		canvas.drawLine(
 				handX,
 				handY - CENTER_GAP_AND_CIRCLE_RADIUS,
@@ -218,6 +214,7 @@ public class ClockComponent extends TimeComponent {
 				mHourPaint);
 
 		canvas.rotate(minutesRotation - hoursRotation, handX, handY);
+		float sMinuteHandLength = 100;
 		canvas.drawLine(
 				handX,
 				handY - CENTER_GAP_AND_CIRCLE_RADIUS,
