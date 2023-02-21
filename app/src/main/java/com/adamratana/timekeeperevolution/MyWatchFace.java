@@ -14,7 +14,6 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
-import android.widget.Toast;
 
 import com.adamratana.timekeeperevolution.config.Configs;
 import com.adamratana.timekeeperevolution.engine.TimeKeeper;
@@ -176,9 +175,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
 					break;
 				case TAP_TYPE_TAP:
 					// The user has completed the tap gesture.
-					// TODO: Add code to handle the tap gesture.
-					Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
-							.show();
 					break;
 			}
 			invalidate();
