@@ -78,7 +78,11 @@ public class TimeKeeper {
 	public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		/* Scale loaded background image (more efficient) if surface dimensions change. */
 		float scaleW = ((float) width) / (float) ABSOLUTE_WIDTH;
-		float scaleH = ((float) width) / (float) ABSOLUTE_HEIGHT;
+		float scaleH = ((float) height) / (float) ABSOLUTE_HEIGHT;
+
+		if (scaleW == 0 || scaleH == 0) {
+			return;
+		}
 
 		orrery.onScaleChange(scaleW, scaleH);
 		clock.onScaleChange(scaleW, scaleH);
