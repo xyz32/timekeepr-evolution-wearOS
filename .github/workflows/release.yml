@@ -1,12 +1,12 @@
 name: Release APK
 
-# Builds the release APK and publishes it as a GitHub release named vYYYY.MM-# (e.g. v2026.10-1)
-# when either:
-#   - a tag vYYYY.MM-# is pushed, or
-#   - a push's latest commit message starts with vYYYY.MM-# (e.g. "v2026.10-1 New planets"). The
-#     release then creates the tag on that commit.
+# Builds the signed release APK and publishes it as a GitHub release named vYYYY.MM-#
+# (e.g. v2026.10-1) when either:
+#   - a vYYYY.MM-# tag is pushed on a commit that is on master, or
+#   - a commit whose message starts with "Release vYYYY.MM-#" is pushed to master as the last
+#     commit of the push. The release then creates the tag on that commit.
 #
-# The APK is signed when these repository secrets are set, and left unsigned otherwise:
+# The APK is signed with the keystore in these repository secrets; the run fails without them:
 #   RELEASE_KEYSTORE_BASE64    the keystore file, base64 encoded (base64 -w0 release.jks)
 #   RELEASE_KEYSTORE_PASSWORD
 #   RELEASE_KEY_ALIAS
@@ -14,7 +14,7 @@ name: Release APK
 
 on:
   push:
-    branches: ['**']
+    branches: [master]
     tags: ['v*']
 
 permissions:
@@ -22,36 +22,63 @@ permissions:
 
 jobs:
   version:
-    # Cheap pre-filter; the exact format is checked below.
+    # Cheap pre-filter; the exact rules are checked below.
     if: >-
       !github.event.deleted
-      && (github.ref_type == 'tag' || startsWith(github.event.head_commit.message, 'v'))
+      && (github.ref_type == 'tag' || startsWith(github.event.head_commit.message, 'Release v'))
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.version.outputs.tag }}
-      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.release.outputs.tag }}
+      version: ${{ steps.release.outputs.version }}
+      sha: ${{ steps.release.outputs.sha }}
     steps:
-      - name: Read release version
-        id: version
+      - uses: actions/checkout@v7
+        with:
+          # All history and tags, to check the tag is on master and the version is unused.
+          fetch-depth: 0
+
+      - name: Detect release
+        id: release
         env:
           REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
+          version_re='v([0-9]{4}\.(0[1-9]|1[0-2])-[0-9]{1,2})'
+          sha="$(git rev-parse HEAD)"
           if [ "$REF_TYPE" = tag ]; then
-            candidate="$REF_NAME"
+            if ! [[ "$REF_NAME" =~ ^${version_re}$ ]]; then
+              echo "Tag $REF_NAME is not a vYYYY.MM-# version, nothing to release."
+              exit 0
+            fi
+            tag="$REF_NAME"
+            if ! git merge-base --is-ancestor "$sha" origin/master; then
+              echo "::error::Tag $tag is on $sha, which is not on master."
+              exit 1
+            fi
           else
-            # First word of the commit message, allowing a trailing colon ("v2026.10-1: ...").
-            candidate="$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1 | awk '{ print $1 }')"
-            candidate="${candidate%:}"
+            # "Release v2026.10-1", optionally followed by a colon or more text.
+            subject="$(git log -1 --format=%s "$sha")"
+            if ! [[ "$subject" =~ ^Release\ ${version_re}([[:space:]:]|$) ]]; then
+              echo "Not a release commit, nothing to release."
+              exit 0
+            fi
+            tag="v${BASH_REMATCH[1]}"
+            existing="$(git rev-parse -q --verify "refs/tags/$tag^{commit}" || true)"
+            if [ -n "$existing" ] && [ "$existing" != "$sha" ]; then
+              echo "::error::Tag $tag already exists on $existing. Use a new version, or delete that tag first."
+              exit 1
+            fi
+            if [ -n "$existing" ]; then
+              echo "Tag $tag already marks this commit, so the tag's own run releases it."
+              exit 0
+            fi
           fi
-          if [[ "$candidate" =~ ^v([0-9]{4}\.(0[1-9]|1[0-2])-[0-9]{1,2})$ ]]; then
-            echo "Releasing $candidate"
-            echo "tag=$candidate" >> "$GITHUB_OUTPUT"
-            echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
-          else
-            echo "'$candidate' is not a vYYYY.MM-# version, nothing to release."
-          fi
+          echo "Releasing $tag from $sha."
+          {
+            echo "tag=$tag"
+            echo "version=${tag#v}"
+            echo "sha=$sha"
+          } >> "$GITHUB_OUTPUT"
 
   build:
     needs: version
@@ -59,14 +86,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    # A tag and a commit message for the same version both resolve here; run them one at a time.
+    # Never publish the same version from two runs at once (e.g. a re-run).
     concurrency:
       group: release-${{ needs.version.outputs.tag }}
     env:
       TAG: ${{ needs.version.outputs.tag }}
       VERSION: ${{ needs.version.outputs.version }}
+      SHA: ${{ needs.version.outputs.sha }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.version.outputs.sha }}
 
       - uses: gradle/actions/wrapper-validation@v6
 
@@ -78,13 +108,20 @@ jobs:
 
       - name: Decode signing keystore
         env:
-          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::warning::RELEASE_KEYSTORE_BASE64 is not set, so the APK is unsigned and cannot be installed."
-            exit 0
+          missing=""
+          for name in RELEASE_KEYSTORE_BASE64 RELEASE_KEYSTORE_PASSWORD RELEASE_KEY_ALIAS RELEASE_KEY_PASSWORD; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing. Add them under Settings > Secrets and variables > Actions."
+            exit 1
           fi
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
           echo "RELEASE_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
 
       - name: Build release APK
@@ -94,14 +131,14 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew --no-daemon assembleRelease -PreleaseVersion="$VERSION"
 
-      - name: Collect APK
+      - name: Verify signature and collect APK
         id: apk
         run: |
-          # app-release.apk when signed, app-release-unsigned.apk otherwise.
-          apk="$(ls app/build/outputs/apk/release/*.apk)"
-          suffix=""
-          case "$apk" in *-unsigned.apk) suffix="-unsigned" ;; esac
-          out="TimeKeeperEvolution-$TAG$suffix.apk"
+          apk=app/build/outputs/apk/release/app-release.apk
+          build_tools="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)"
+          # Fails unless the APK is properly signed; the certificate digest is printed for checking.
+          "$build_tools/apksigner" verify --print-certs "$apk"
+          out="TimeKeeperEvolution-$TAG.apk"
           cp "$apk" "$out"
           echo "path=$out" >> "$GITHUB_OUTPUT"
 
@@ -119,5 +156,5 @@ jobs:
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release upload "$TAG" "$APK" --clobber
           else
-            gh release create "$TAG" "$APK" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+            gh release create "$TAG" "$APK" --target "$SHA" --title "$TAG" --generate-notes
           fi
