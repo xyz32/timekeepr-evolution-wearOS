@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Time Keeper Evolution, in Watch Face Format version 1.
+
+    The virtual screen is 956 x 956, the size of timekeeper_bg, so every position below is in the
+    artwork's own pixels. Strokes are sized for a ~450 px watch (2.124 scene px per screen px).
+
+    Ambient mode shows only the hour and minute hands of the selected clock on black.
+-->
+<WatchFace width="956" height="956" clipShape="NONE">
+    <Metadata key="CLOCK_TYPE" value="ANALOG" />
+    <Metadata key="PREVIEW_TIME" value="10:08:32" />
+
+    <UserConfigurations>
+        <ListConfiguration id="background" displayName="background" defaultValue="dark_sky">
+            <ListOption id="supernova" displayName="background_supernova" icon="orrery_bg_supernova" />
+            <ListOption id="dark_sky" displayName="background_dark_sky" icon="orrery_bg_backsky" />
+            <ListOption id="scifi" displayName="background_scifi" icon="orrery_bg_scifi" />
+        </ListConfiguration>
+        <ListConfiguration id="clock" displayName="clock" defaultValue="large">
+            <ListOption id="large" displayName="large" />
+            <ListOption id="small" displayName="small" />
+            <ListOption id="hidden" displayName="hidden" />
+        </ListConfiguration>
+        <BooleanConfiguration id="showCalendar" displayName="show_calendar" defaultValue="FALSE" />
+    </UserConfigurations>
+
+    <Scene backgroundColor="#FF000000">
+
+        <!-- Orrery: sky, frame, sun, planets, month ring and looking glass. -->
+        <Group name="orrery" x="0" y="0" width="956" height="956">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+
+            <ListConfiguration id="background">
+                <ListOption id="supernova">
+                    <PartImage x="187" y="187" width="589" height="589">
+                        <Image resource="orrery_bg_supernova" />
+                    </PartImage>
+                </ListOption>
+                <ListOption id="dark_sky">
+                    <PartImage x="187" y="187" width="589" height="589">
+                        <Image resource="orrery_bg_backsky" />
+                    </PartImage>
+                </ListOption>
+                <ListOption id="scifi">
+                    <PartImage x="187" y="187" width="589" height="589">
+                        <Image resource="orrery_bg_scifi" />
+                    </PartImage>
+                </ListOption>
+            </ListConfiguration>
+
+            <PartImage x="0" y="0" width="956" height="956">
+                <Image resource="timekeeper_bg" />
+            </PartImage>
+            <PartImage x="187" y="187" width="589" height="589">
+                <Image resource="inner_metal_frame_bg" />
+            </PartImage>
+            <PartImage x="458" y="458" width="40" height="40">
+                <Image resource="boddy_sun_top" />
+            </PartImage>
+            <PartImage x="434" y="434" width="94" height="94">
+                <Image resource="boddy_sun_top" />
+            </PartImage>
+
+            <!--
+                Planets orbit (481, 481): each one sits straight up from the centre of a 640 x 640
+                group and the group is rotated by -(heliocentric longitude + 90) degrees.
+
+                The longitude replaces the original Kepler-equation solver with the closed-form
+                equation of the centre (good to 0.4 degrees for Mercury, under 0.1 for the rest):
+                    lambda = L0 + 90 + nL * d
+                             + c1 * sin(M) + c2 * sin(2M) + c3 * sin(3M),   M = M0 + nM * d
+                where d is days since J2000 (the original dayNumber()), the rates are per day, and
+                c1..c3 = (2e - e^3/4, 5/4 e^2, 13/12 e^3) in degrees, from the J2000 orbital elements.
+                Terms under 0.01 degrees are left out.
+            -->
+            <Group name="mercury" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(342.25084 + 4.092338796 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 23.439 * sin(rad((174.79439 + 4.092334434 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 3.02837 * sin(rad(2 * (174.79439 + 4.092334434 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.5397 * sin(rad(3 * (174.79439 + 4.092334434 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="305" y="235" width="30" height="30">
+                    <Image resource="boddy_mercury_top" />
+                </PartImage>
+            </Group>
+            <Group name="venus" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(271.97973 + 1.602130474 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 0.77615 * sin(rad((50.44675 + 1.602131302 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="303" y="196" width="34" height="34">
+                    <Image resource="body_venus_top" />
+                </PartImage>
+            </Group>
+            <Group name="earth" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(190.46435 + 0.985609101 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 1.91478 * sin(rad((-2.48284 + 0.985599987 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.02 * sin(rad(2 * (-2.48284 + 0.985599987 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="302" y="157" width="36" height="36">
+                    <Image resource="body_earth_top" />
+                </PartImage>
+            </Group>
+            <Group name="mars" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(445.45332 + 0.524033035 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 10.69259 * sin(rad((19.41248 + 0.524021165 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.62494 * sin(rad(2 * (19.41248 + 0.524021165 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.05059 * sin(rad(3 * (19.41248 + 0.524021165 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="304" y="127" width="32" height="32">
+                    <Image resource="body_mars_top" />
+                </PartImage>
+            </Group>
+            <Group name="jupiter" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(124.40438 + 0.083086762 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 5.54377 * sin(rad((19.65053 + 0.083080374 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.16772 * sin(rad(2 * (19.65053 + 0.083080374 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="295" y="88" width="50" height="50">
+                    <Image resource="body_jupiter_top" />
+                </PartImage>
+            </Group>
+            <Group name="saturn" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(139.94432 + 0.033470629 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 6.20293 * sin(rad((-42.48762 + 0.03348545 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.21001 * sin(rad(2 * (-42.48762 + 0.03348545 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="277" y="40" width="86" height="86">
+                    <Image resource="body_saturn_top" />
+                </PartImage>
+            </Group>
+            <Group name="uranus" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(403.23218 + 0.011731294 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 5.40352 * sin(rad((142.26794 + 0.011721311 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))) + 0.15934 * sin(rad(2 * (142.26794 + 0.011721311 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="301" y="34" width="38" height="38">
+                    <Image resource="body_uranus_top" />
+                </PartImage>
+            </Group>
+            <Group name="neptune" x="161" y="161" width="640" height="640" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="-(394.88003 + 0.005981057 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24) + 0.98386 * sin(rad((259.90868 + 0.005987479 * (367 * [YEAR] - floor(7 * ([YEAR] + floor(([MONTH] + 9) / 12)) / 4) + floor(275 * [MONTH] / 9) + [DAY] - 730531.5 + ([HOUR_0_23] + [MINUTE] / 60) / 24)))))" />
+                <PartImage x="301" y="6" width="38" height="38">
+                    <Image resource="body_neptune_top" />
+                </PartImage>
+            </Group>
+
+            <!-- Month ring: rotated to the start of the month, then one degree per elapsed day. -->
+            <PartImage x="34" y="40" width="890" height="890" pivotX="0.5" pivotY="0.5">
+                <Transform target="angle" value="([MONTH] == 1 ? 0 : ([MONTH] == 2 ? -31 : ([MONTH] == 3 ? -62 : ([MONTH] == 4 ? -93 : ([MONTH] == 5 ? -123 : ([MONTH] == 6 ? -153 : ([MONTH] == 7 ? -182.5 : ([MONTH] == 8 ? -212 : ([MONTH] == 9 ? -241.5 : ([MONTH] == 10 ? -270.5 : ([MONTH] == 11 ? -299.5 : -329.2))))))))))) - ([DAY] - 1)" />
+                <Image resource="month_ring" />
+            </PartImage>
+
+            <PartImage x="816" y="423" width="140" height="190">
+                <Image resource="looking_glass" />
+            </PartImage>
+        </Group>
+
+        <!-- Calendar plate: day, month and year. -->
+        <BooleanConfiguration id="showCalendar">
+            <BooleanOption id="TRUE">
+                <Group name="calendar" x="586" y="380" width="370" height="227">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <PartImage x="0" y="0" width="370" height="227">
+                        <Image resource="calendar_bg" />
+                    </PartImage>
+                    <PartText x="176" y="24" width="80" height="50">
+                        <Text align="CENTER">
+                            <Font family="SYNC_TO_DEVICE" size="38.5" color="#FF000000">
+                                <Template>%s<Parameter expression="[DAY_Z]" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+                    <PartText x="66" y="88" width="100" height="40">
+                        <Text align="CENTER">
+                            <Font family="SYNC_TO_DEVICE" size="30.8" color="#FF000000">
+                                <Upper><Template>%s<Parameter expression="[MONTH_S]" /></Template></Upper>
+                            </Font>
+                        </Text>
+                    </PartText>
+                    <PartText x="128" y="144" width="120" height="50">
+                        <Text align="CENTER">
+                            <Font family="SYNC_TO_DEVICE" size="38.5" color="#FF000000">
+                                <Template>%d<Parameter expression="[YEAR]" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+                </Group>
+            </BooleanOption>
+        </BooleanConfiguration>
+
+        <!-- Clock: drawn last so the fullscreen hands sit on top of the calendar. -->
+        <ListConfiguration id="clock">
+            <ListOption id="small">
+                <Group name="small_clock" x="90" y="90" width="350" height="350">
+                    <PartImage x="0" y="0" width="350" height="350">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="clock_bg" />
+                    </PartImage>
+                    <PartText x="117" y="221" width="120" height="40">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Text align="CENTER">
+                            <Font family="SYNC_TO_DEVICE" size="32" color="#FF000000">
+                                <Upper><Template>%s<Parameter expression="[DAY_OF_WEEK_S]" /></Template></Upper>
+                            </Font>
+                        </Text>
+                    </PartText>
+
+                    <!-- Seconds sub-dial, centred on (178, 114). -->
+                    <PartDraw x="128" y="64" width="100" height="100" pivotX="0.5" pivotY="0.5">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Transform target="angle" value="[SECOND] * 6" />
+                        <Line startX="50" startY="50" endX="50" endY="18">
+                            <Stroke color="#40000000" thickness="14.45" cap="ROUND" />
+                        </Line>
+                        <Line startX="50" startY="50" endX="50" endY="18">
+                            <Stroke color="#FFFF0000" thickness="4.25" cap="ROUND" />
+                        </Line>
+                    </PartDraw>
+
+                    <!-- Hour and minute hands, centred on (178, 176). -->
+                    <PartDraw x="58" y="56" width="240" height="240" pivotX="0.5" pivotY="0.5">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Transform target="angle" value="[HOUR_0_11] * 30 + [MINUTE] / 2" />
+                        <Line startX="120" startY="111.5" endX="120" endY="50">
+                            <Stroke color="#40000000" thickness="20.8" cap="ROUND" />
+                        </Line>
+                    </PartDraw>
+                    <PartDraw x="58" y="56" width="240" height="240" pivotX="0.5" pivotY="0.5">
+                        <Transform target="angle" value="[HOUR_0_11] * 30 + [MINUTE] / 2" />
+                        <Line startX="120" startY="111.5" endX="120" endY="50">
+                            <Stroke color="#FFFFFFFF" thickness="10.6" cap="ROUND" />
+                        </Line>
+                    </PartDraw>
+                    <PartDraw x="58" y="56" width="240" height="240" pivotX="0.5" pivotY="0.5">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Transform target="angle" value="[MINUTE] * 6" />
+                        <Line startX="120" startY="111.5" endX="120" endY="20">
+                            <Stroke color="#40000000" thickness="16.6" cap="ROUND" />
+                        </Line>
+                        <Ellipse x="111.5" y="111.5" width="17" height="17">
+                            <Stroke color="#40000000" thickness="14.45" />
+                        </Ellipse>
+                    </PartDraw>
+                    <PartDraw x="58" y="56" width="240" height="240" pivotX="0.5" pivotY="0.5">
+                        <Transform target="angle" value="[MINUTE] * 6" />
+                        <Line startX="120" startY="111.5" endX="120" endY="20">
+                            <Stroke color="#FFFFFFFF" thickness="6.4" cap="ROUND" />
+                        </Line>
+                        <Ellipse x="111.5" y="111.5" width="17" height="17">
+                            <Stroke color="#FFFFFFFF" thickness="4.25" />
+                        </Ellipse>
+                    </PartDraw>
+                </Group>
+            </ListOption>
+
+            <ListOption id="large">
+                <!-- Fullscreen hands around the screen centre (478, 478). -->
+                <Group name="large_clock" x="0" y="0" width="956" height="956">
+                    <PartDraw x="104" y="104" width="748" height="748" pivotX="0.5" pivotY="0.5">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Transform target="angle" value="[SECOND] * 6" />
+                        <Line startX="374" startY="374" endX="374" endY="15.5">
+                            <Stroke color="#40000000" thickness="11.9" cap="ROUND" />
+                        </Line>
+                        <Line startX="374" startY="374" endX="374" endY="15.5">
+                            <Stroke color="#FFFF0000" thickness="4.25" cap="ROUND" />
+                        </Line>
+                    </PartDraw>
+                    <PartDraw x="248" y="248" width="460" height="460" pivotX="0.5" pivotY="0.5">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Transform target="angle" value="[HOUR_0_11] * 30 + [MINUTE] / 2" />
+                        <Line startX="230" startY="221.5" endX="230" endY="14.9">
+                            <Stroke color="#40000000" thickness="18.25" cap="ROUND" />
+                        </Line>
+                    </PartDraw>
+                    <PartDraw x="248" y="248" width="460" height="460" pivotX="0.5" pivotY="0.5">
+                        <Transform target="angle" value="[HOUR_0_11] * 30 + [MINUTE] / 2" />
+                        <Line startX="230" startY="221.5" endX="230" endY="14.9">
+                            <Stroke color="#FFFFFFFF" thickness="10.6" cap="ROUND" />
+                        </Line>
+                    </PartDraw>
+                    <PartDraw x="152" y="152" width="652" height="652" pivotX="0.5" pivotY="0.5">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Transform target="angle" value="[MINUTE] * 6" />
+                        <Line startX="326" startY="317.5" endX="326" endY="15.3">
+                            <Stroke color="#40000000" thickness="14.05" cap="ROUND" />
+                        </Line>
+                        <Ellipse x="317.5" y="317.5" width="17" height="17">
+                            <Stroke color="#40000000" thickness="11.9" />
+                        </Ellipse>
+                    </PartDraw>
+                    <PartDraw x="152" y="152" width="652" height="652" pivotX="0.5" pivotY="0.5">
+                        <Transform target="angle" value="[MINUTE] * 6" />
+                        <Line startX="326" startY="317.5" endX="326" endY="15.3">
+                            <Stroke color="#FFFFFFFF" thickness="6.4" cap="ROUND" />
+                        </Line>
+                        <Ellipse x="317.5" y="317.5" width="17" height="17">
+                            <Stroke color="#FFFFFFFF" thickness="4.25" />
+                        </Ellipse>
+                    </PartDraw>
+                </Group>
+            </ListOption>
+        </ListConfiguration>
+
+    </Scene>
+</WatchFace>

@@ -1,16 +1,14 @@
 <resources>
-    <string name="app_name">TimeKeeperEvolution</string>
-    <string name="message">Watch face tapped</string>
     <string name="my_analog_name">Time Keeper Evolution</string>
 
     <!-- config -->
-    <string name="analog_complication_config">Configuration</string>
+    <string name="background">Background</string>
     <string name="background_supernova">Supernova</string>
     <string name="background_dark_sky">Dark Sky</string>
     <string name="background_scifi">Sci-fi</string>
-    <string name="change_background">Change Background</string>
-    <string name="show_calendar">Show Calendar</string>
+    <string name="clock">Clock</string>
     <string name="large">Fullscreen</string>
     <string name="small">Small</string>
-    <string name="show_clock">Show Clock</string>
+    <string name="hidden">Hidden</string>
+    <string name="show_calendar">Show Calendar</string>
 </resources>

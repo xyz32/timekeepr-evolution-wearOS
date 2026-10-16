@@ -1,5 +1,6 @@
 *.iml
 .gradle
+.claude/
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -13,3 +14,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea/AndroidProjectSystem.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/deviceManager.xml
+/.idea/markdown.xml

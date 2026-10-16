@@ -3,35 +3,28 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    namespace = 'com.adamratana.timekeeperevolution'
+    compileSdk = 37
 
     defaultConfig {
-        applicationId "com.adamratana.timekeeperevolution"
-        minSdk 23
-        targetSdk 33
-        versionCode 7
-        versionName "1.6"
+        applicationId = 'com.adamratana.timekeeperevolution'
+        // Watch Face Format version 1 (see AndroidManifest.xml) needs Wear OS 4, API 33.
+        minSdk = 33
+        targetSdk = 36
+        versionCode = 7
+        versionName = '1.6'
     }
 
     buildTypes {
+        // The watch face is resource only (android:hasCode="false"). Minifying lets R8 drop the
+        // generated R classes so no dex is packaged; resource shrinking must stay off because the
+        // drawables are only referenced by name from res/raw/watchface.xml.
+        debug {
+            minifyEnabled = true
+        }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled = true
+            shrinkResources = false
         }
     }
-    namespace 'com.adamratana.timekeeperevolution'
-}
-
-dependencies {
-
-    implementation 'com.google.android.gms:play-services-wearable:18.0.0'
-    implementation 'androidx.percentlayout:percentlayout:1.0.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.google.android.support:wearable:2.9.0'
-    implementation 'androidx.palette:palette:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    compileOnly 'com.google.android.wearable:wearable:2.9.0'
 }
