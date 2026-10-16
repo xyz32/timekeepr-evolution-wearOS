@@ -2,6 +2,22 @@ plugins {
     id 'com.android.application'
 }
 
+// Release builds from CI (.github/workflows/release.yml) pass -PreleaseVersion=YYYY.MM-#, taken from
+// a vYYYY.MM-# tag or commit message. It becomes versionName, and versionCode is YYYYMM##, so
+// 2026.10-1 gives 20261001.
+def releaseVersion = providers.gradleProperty('releaseVersion').orNull
+def releaseVersionCode = null
+if (releaseVersion != null) {
+    def match = releaseVersion =~ /^(\d{4})\.(0[1-9]|1[0-2])-(\d{1,2})$/
+    if (!match.matches()) {
+        throw new GradleException("releaseVersion must look like 2026.10-1, got '${releaseVersion}'")
+    }
+    releaseVersionCode = (match.group(1) as int) * 10000 + (match.group(2) as int) * 100 + (match.group(3) as int)
+}
+
+// CI signs the release APK when it is given a keystore; other builds are left as they were.
+def releaseKeystore = providers.environmentVariable('RELEASE_KEYSTORE_FILE').orNull
+
 android {
     namespace = 'com.adamratana.timekeeperevolution'
     compileSdk = 37
@@ -11,8 +27,19 @@ android {
         // Watch Face Format version 1 (see AndroidManifest.xml) needs Wear OS 4, API 33.
         minSdk = 33
         targetSdk = 36
-        versionCode = 7
-        versionName = '1.6'
+        versionCode = releaseVersionCode ?: 7
+        versionName = releaseVersion ?: '1.6'
+    }
+
+    if (releaseKeystore != null) {
+        signingConfigs {
+            release {
+                storeFile = file(releaseKeystore)
+                storePassword = providers.environmentVariable('RELEASE_KEYSTORE_PASSWORD').orNull
+                keyAlias = providers.environmentVariable('RELEASE_KEY_ALIAS').orNull
+                keyPassword = providers.environmentVariable('RELEASE_KEY_PASSWORD').orNull
+            }
+        }
     }
 
     buildTypes {
@@ -25,6 +52,9 @@ android {
         release {
             minifyEnabled = true
             shrinkResources = false
+            if (releaseKeystore != null) {
+                signingConfig = signingConfigs.release
+            }
         }
     }
 }
